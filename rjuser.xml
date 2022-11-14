@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="library" method="upgrade">
+    <name>RJ User Library</name>
+    <libraryname>rjuser</libraryname>
+    <author>Ron Crans</author>
+    <creationDate>November 2022</creationDate>
+    <copyright>Copyright (C) 2022 RJCreations. All rights reserved.</copyright>
+    <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
+    <authorEmail>ron@rjconline.net</authorEmail>
+    <authorUrl>rjconline.net</authorUrl>
+    <version>1.0</version>
+    <description>A library to support my user centric components</description>
+    <files>
+        <file>com.php</file>
+    </files>
+</extension>
