@@ -72,20 +72,20 @@ abstract class RJUserCom
 				$char1 = '_';
 				break;
 			default:
-				$char1 = '';
+				$char1 = '@_';
 				break;
 		}
 		$dpath = JPATH_SITE.'/'.self::getStorPath().'/';
 		if (is_dir($dpath) && ($dh = opendir($dpath))) {
 			while (($file = readdir($dh)) !== false) {
-				if ($file[0]==$char1) {
+				if (strpos($char1, $file[0]) !== false) {
 					foreach (glob($dpath.$file.'/'.$cmp.'*') as $mid) {
 						$ptf = $mid.'/'.$dbname.'.sql3';
-					if (file_exists($ptf))
-						$paths[] = $full ? $ptf : $file;
+						if (file_exists($ptf)) $paths[] = $full ? $ptf : $file;
 						$ptf = $mid.'/'.$dbname.'.db3';
-						if (file_exists($ptf))
-							$paths[] = $full ? $ptf : $file;
+						if (file_exists($ptf)) $paths[] = $full ? $ptf : $file;
+						$ptf = $mid.'/'.$dbname.'.sqlite';
+						if (file_exists($ptf)) $paths[] = $full ? $ptf : $file;
 					}
 				}
 			}
