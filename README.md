@@ -1,2 +1,2 @@
-# joomla_lib_rjuser
-A library for user centric components
+# RJUser Joomla Library
+A library for my user centric components
