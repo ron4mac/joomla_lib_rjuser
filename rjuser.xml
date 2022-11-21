@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="library" method="upgrade">
-    <name>RJ User Library</name>
+    <name>RJUser Library</name>
     <libraryname>rjuser</libraryname>
     <author>Ron Crans</author>
     <creationDate>November 2022</creationDate>
@@ -9,8 +9,12 @@
     <authorEmail>ron@rjconline.net</authorEmail>
     <authorUrl>rjconline.net</authorUrl>
     <version>1.0</version>
+    <updater jver="4\.[0-3]" pver="7.0" />
     <description>A library to support my user centric components</description>
     <files>
         <file>com.php</file>
     </files>
+	<updateservers>
+		<server type="extension" priority="1" name="RJUser Library Updates">http://rjcrans.net/jupdates/lib_rjuser/updates.php</server>
+	</updateservers>
 </extension>
