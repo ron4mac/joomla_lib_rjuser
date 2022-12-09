@@ -4,10 +4,13 @@ use Joomla\CMS\Factory;
 
 abstract class RJUserCom
 {
+	protected static $siteMenu = null;
+
 	public static function shout ()
 	{
 		echo 'READ ANY GOOD BOOKS LATELY?';
 	}
+
 
 	public static function getInstObject ($ityp, $mid=null)	// SO
 	{
@@ -60,11 +63,17 @@ abstract class RJUserCom
 		return self::getStorPath().'/'.$instObj->path.'/'.$cmp;
 	}
 
+
 	public static function getDbPaths ($which, $dbname, $full=false, $cmp='')	// AO
 	{
 		$paths = [];
 		if (!$cmp) $cmp = JApplicationHelper::getComponentName();
+		$cmp_ = $cmp.'_';
+		$cmpl = strlen($cmp_);
 		switch ($which) {
+			case 'a':
+				$char1 = '*';
+				break;
 			case 'u':
 				$char1 = '@';
 				break;
@@ -77,15 +86,25 @@ abstract class RJUserCom
 		}
 		$dpath = JPATH_SITE.'/'.self::getStorPath().'/';
 		if (is_dir($dpath) && ($dh = opendir($dpath))) {
+			if (!self::$siteMenu) {
+				self::$siteMenu = Factory::getApplication()->getMenu('site');
+			}
 			while (($file = readdir($dh)) !== false) {
-				if (strpos($char1, $file[0]) !== false) {
+				if ($file[0]=='.') continue;
+				if ($char1=='*' || strpos($char1, $file[0]) !== false) {
+					if (!is_dir($dpath.$file)) continue;
 					foreach (glob($dpath.$file.'/'.$cmp.'*') as $mid) {
+						$dir = basename($mid);
+						if ($dir==$cmp) {
+							$mnut = 'OLD STORAGE LOCATION SCHEMA';
+						} elseif (substr($dir,0,$cmpl)==$cmp_) {
+							$mnu = (int)substr($dir,$cmpl);			//echo'<xmp>';var_dump(self::$siteMenu->getItem($mnu));echo'</xmp>';
+							$mnut = self::$siteMenu->getItem($mnu)->title." ({$mnu})";
+						} else echo "$cmpl $cmp_ $dir<br>";
 						$ptf = $mid.'/'.$dbname.'.sql3';
-						if (file_exists($ptf)) $paths[] = $full ? $ptf : $file;
-						$ptf = $mid.'/'.$dbname.'.db3';
-						if (file_exists($ptf)) $paths[] = $full ? $ptf : $file;
-						$ptf = $mid.'/'.$dbname.'.sqlite';
-						if (file_exists($ptf)) $paths[] = $full ? $ptf : $file;
+						if (!file_exists($ptf)) $ptf = $mid.'/'.$dbname.'.db3';
+						if (!file_exists($ptf)) $ptf = $mid.'/'.$dbname.'.sqlite';
+						if (file_exists($ptf)) $paths[$file][$mnu] = ['path'=>$full ? $ptf : $file, 'mnun' => $mnu, 'mnut'=>$mnut];		//$paths[$file] = $full ? $ptf : $file;
 					}
 				}
 			}
@@ -94,11 +113,42 @@ abstract class RJUserCom
 		return $paths;
 	}
 
+
+	public static function updateDb ($udbPath)
+	{
+		if (!file_exists($udbPath)) return;
+		$db = JDatabaseDriver::getInstance(['driver'=>'sqlite', 'database'=>$udbPath]);
+		$dbver = $db->setQuery('PRAGMA user_version')->loadResult();
+		$msgs = [];
+		$updf = JPATH_COMPONENT_ADMINISTRATOR.'/sql/upd_'.$dbver.'.sql';
+		if (file_exists($updf)) {
+			$execs = explode(';', file_get_contents($updf));
+			foreach ($execs as $exec) {
+				$msg = null;
+				$exec = trim($exec);
+				if ($exec && $exec[0] != '#') $msg = self::dbnofail($db, $exec);
+				if ($msg) $msgs[] = $msg;
+			}
+		}
+		return $msgs;
+	}
+
+
 	private static function getStorPath ()
 	{
 		$results = Factory::getApplication()->triggerEvent('onRjuserDatapath');
 		$dsp = isset($results[0]) ? trim($results[0]) : false;
 		return ($dsp ?: 'userstor');
+	}
+
+	private static function dbnofail ($db, $q)
+	{
+		try {
+			$db->setQuery($q);
+			@$db->execute();
+		} catch (Exception $e) {
+			return $e->getMessage();
+		}
 	}
 
 }

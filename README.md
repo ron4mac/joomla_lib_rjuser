@@ -1,2 +1,5 @@
 # RJUser Joomla Library
-A library for my user centric components
+A library required for my user centric components ...
+- [MeedyaGallery](https://github.com/ron4mac/joomla_com_meedya)
+- [UserNotes](https://github.com/ron4mac/joomla_com_usernotes)
+- [UserSched](https://github.com/ron4mac/joomla_com_usersched)

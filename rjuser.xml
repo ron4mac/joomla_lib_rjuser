@@ -8,11 +8,12 @@
     <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
     <authorEmail>ron@rjconline.net</authorEmail>
     <authorUrl>rjconline.net</authorUrl>
-    <version>1.1</version>
+    <version>1.2</version>
     <updater jver="4\.[0-3]" pver="7.0" />
     <description>A library to support my user centric components</description>
     <files>
         <file>com.php</file>
+        <folder>fields</folder>
     </files>
 	<updateservers>
 		<server type="extension" priority="1" name="RJUser Library Updates">http://rjcrans.net/jupdates/lib_rjuser/updates.php</server>
