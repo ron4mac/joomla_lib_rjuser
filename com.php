@@ -116,7 +116,7 @@ abstract class RJUserCom
 
 	public static function updateDb ($udbPath)
 	{
-		if (!file_exists($udbPath)) return;
+		if (!file_exists($udbPath)) return ['MISSING DATABASE FILE'];
 		$db = JDatabaseDriver::getInstance(['driver'=>'sqlite', 'database'=>$udbPath]);
 		$dbver = $db->setQuery('PRAGMA user_version')->loadResult();
 		$msgs = [];
@@ -145,7 +145,7 @@ abstract class RJUserCom
 	{
 		try {
 			$db->setQuery($q);
-			@$db->execute();
+			$db->execute();
 		} catch (Exception $e) {
 			return $e->getMessage();
 		}
