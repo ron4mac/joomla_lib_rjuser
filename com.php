@@ -137,7 +137,7 @@ abstract class RJUserCom
 	private static function getStorPath ()
 	{
 		$results = Factory::getApplication()->triggerEvent('onRjuserDatapath');
-		$dsp = isset($results[0]) ? trim($results[0]) : false;
+		$dsp = trim($results[0] ?? '');
 		return ($dsp ?: 'userstor');
 	}
 

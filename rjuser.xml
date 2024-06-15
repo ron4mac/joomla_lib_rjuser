@@ -3,19 +3,19 @@
     <name>RJUser Library</name>
     <libraryname>rjuser</libraryname>
     <author>Ron Crans</author>
-    <creationDate>December 2022</creationDate>
-    <copyright>Copyright (C) 2022 RJCreations. All rights reserved.</copyright>
+    <creationDate>June 2024</creationDate>
+    <copyright>Copyright (C) 2022-2024 RJCreations. All rights reserved.</copyright>
     <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
     <authorEmail>ron@rjconline.net</authorEmail>
     <authorUrl>rjconline.net</authorUrl>
-    <version>1.3</version>
-    <updater jver="4\.[0-3]" pver="7.0" />
+    <version>1.3.1</version>
+    <updater jver="4\.[0-9]" pver="7.0" />
     <description>A library to support my user centric components</description>
     <files>
         <file>com.php</file>
         <folder>fields</folder>
     </files>
 	<updateservers>
-		<server type="extension" priority="1" name="RJUser Library Updates">http://rjcrans.net/jupdates/lib_rjuser/updates.php</server>
+		<server type="extension" priority="1" name="RJUser Library Updates">https://rjcrans.net/jupdates/lib_rjuser/updates.php</server>
 	</updateservers>
 </extension>
