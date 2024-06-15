@@ -1,4 +1,10 @@
 <?php
+/**
+* @package		lib_rjuser
+* @copyright	Copyright (C) 2022-2024 RJCreations. All rights reserved.
+* @license		GNU General Public License version 3 or later; see LICENSE.txt
+* @since		1.3.1
+*/
 
 use Joomla\CMS\Factory;
 
