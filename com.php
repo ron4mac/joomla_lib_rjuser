@@ -3,14 +3,16 @@
 * @package		lib_rjuser
 * @copyright	Copyright (C) 2022-2024 RJCreations. All rights reserved.
 * @license		GNU General Public License version 3 or later; see LICENSE.txt
-* @since		1.3.1
+* @since		1.3.2
 */
 
 use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseDriver;
 
 abstract class RJUserCom
 {
 	protected static $siteMenu = null;
+	protected static $instObj = null;
 
 	public static function shout ()
 	{
@@ -20,6 +22,8 @@ abstract class RJUserCom
 
 	public static function getInstObject ($ityp, $mid=null)	// SO
 	{
+		if (self::$instObj) return self::$instObj;
+
 		$app = Factory::getApplication();
 		if ($mid) {
 			$params = $app->getMenu()->getItem($mid)->getParams();
@@ -51,8 +55,8 @@ abstract class RJUserCom
 				if ($uid && in_array($auth, $ugrps)) $perms = $allperms;
 				break;
 		}
-		$obj = new RJUserInstanceObject($params->get($ityp), $menuid, $uid, $path, $perms);
-		return $obj;
+		self::$instObj = new RJUserInstanceObject($params->get($ityp), $menuid, $uid, $path, $perms);
+		return self::$instObj;
 	}
 
 
@@ -120,10 +124,52 @@ abstract class RJUserCom
 	}
 
 
+	public static function getDb ($creok=false, $fnam=null, $fext='.db3')
+	{
+		$path = self::getStoragePath(self::getInstObject('instance_type')).'/';
+		$cmpnam = explode('_',basename(JPATH_COMPONENT))[1];
+		$dbfile = $path.($fnam??$cmpnam).$fext;
+//var_dump($dbfile);jexit();
+		if (file_exists($dbfile)) return self::openDb($dbfile);
+//var_dump($dbfile);jexit();
+		if (!$creok) throw new Exception('NOT ALLOWED: create DB', 400);
+
+		return self::createDb($path, $fnam, $fext);
+	}
+
+
+	public static function createDb ($path, $fnam=null, $fext='.db3')
+	{
+		$cmpnam = explode('_',basename(JPATH_COMPONENT))[1];
+		$dbfile = $path.($fnam??$cmpnam).$fext;
+		if (file_exists($dbfile)) return;
+		$db = self::openDb($dbfile);
+		$execs = explode(';', file_get_contents(JPATH_COMPONENT_ADMINISTRATOR.'/sql/'.$cmpnam.'.sql'));
+		foreach ($execs as $exec) {
+			$exec = trim($exec);
+			if ($exec && $exec[0] != '#') $db->setQuery($exec)->execute();
+		}
+		return $db;
+	}
+
+
+	public static function getDbInfo ($udbPath, $table, $szcb=null)
+	{
+		if (!file_exists($udbPath)) return [];
+		$size = filesize($udbPath);var_dump(explode('_',basename(JPATH_COMPONENT))[1]);
+		$db = self::openDb($udbPath);
+		$items = $db->setQuery('SELECT COUNT(*) FROM '.$table)->loadResult();
+		$dbv = $db->setQuery('PRAGMA user_version')->loadResult();
+		// get any extra storage useage as determined by the instance
+		if ($szcb) $size += $szcb($db);
+		return ['size'=>$size,'items'=>$items,'dbv'=>$dbv];
+	}
+
+
 	public static function updateDb ($udbPath)
 	{
 		if (!file_exists($udbPath)) return ['MISSING DATABASE FILE'];
-		$db = JDatabaseDriver::getInstance(['driver'=>'sqlite', 'database'=>$udbPath]);
+		$db = self::openDb($udbPath);
 		$dbver = $db->setQuery('PRAGMA user_version')->loadResult();
 		$msgs = [];
 		$updf = JPATH_COMPONENT_ADMINISTRATOR.'/sql/upd_'.$dbver.'.sql';
@@ -145,6 +191,13 @@ abstract class RJUserCom
 		$results = Factory::getApplication()->triggerEvent('onRjuserDatapath');
 		$dsp = trim($results[0] ?? '');
 		return ($dsp ?: 'userstor');
+	}
+
+	private static function openDb ($ptdbf)
+	{
+		$db = DatabaseDriver::getInstance(['driver'=>'sqlite','database'=>$ptdbf]);
+		$db->connect();
+		return $db;
 	}
 
 	private static function dbnofail ($db, $q)
