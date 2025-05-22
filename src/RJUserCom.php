@@ -1,9 +1,9 @@
 <?php
 /**
 * @package		lib_rjuser
-* @copyright	Copyright (C) 2022-2024 RJCreations. All rights reserved.
+* @copyright	Copyright (C) 2022-2025 RJCreations. All rights reserved.
 * @license		GNU General Public License version 3 or later; see LICENSE.txt
-* @since		1.3.5
+* @since		1.3.6
 */
 namespace RJCreations\Library;
 
@@ -153,11 +153,8 @@ abstract class RJUserCom
 		$path = self::getStoragePath().'/';
 		$cmpnam = explode('_',basename(JPATH_COMPONENT))[1];
 		$dbfile = $path.($fnam??$cmpnam).$fext;
-//var_dump($dbfile);jexit();
 		if (file_exists($dbfile)) return self::openDb($dbfile);
-//var_dump($dbfile);jexit();
 		if (!$creok) throw new \Exception('NOT ALLOWED: create DB', 400);
-
 		return self::createDb($path, $fnam, $fext);
 	}
 
@@ -209,13 +206,6 @@ abstract class RJUserCom
 		return $msgs;
 	}
 
-
-/*	private static function getStorPath ()
-	{
-		$results = Factory::getApplication()->triggerEvent('onRjuserDatapath');
-		$dsp = trim($results[0] ?? '');
-		return ($dsp ?: 'userstor');
-	}*/
 
 	private static function openDb ($ptdbf)
 	{
