@@ -33,6 +33,10 @@ class lib_rjuserInstallerScript extends InstallerScript
 
 	public function postflight ($type, $parent) 
 	{
+		if ($type === 'update') {
+			$this->removeFiles();
+		}
+		return true;
 	}
 
 }
